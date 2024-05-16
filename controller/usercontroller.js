@@ -16,12 +16,15 @@ class UserController {
                          const Hashpassword = await bcrypt.hash(password,salt)
                          const doc = new userModel({
                             name : name,
-                            email : email,
+                            email : email,  
                             password : Hashpassword,
                             tc : tc
                          })
                          await doc.save()
-                         res.send({status : "success" , message : "registered"})
+                         const saved_user = await userModel.findOne({email: email})
+                         //genarste jwt token
+                         const token = jwt.sign({userID : saved_user._id},process.env.JWT_SECRET_KEY,{expiresIn : '5d'})
+                         res.send({status : "success" , message : "registered", 'token': token})
                     }catch(error){
                       res.send({status : "failed" , message : "unable to registered"})
                     }
@@ -43,7 +46,9 @@ class UserController {
                 if(user){
                         const isMatch = await bcrypt.compare(password , user.password)
                         if((user.email === email)&& isMatch){
-                            res.send({status :"success" , message: "login successfull"})
+                            //genarste jwt token
+                         const token = jwt.sign({userID : user._id},process.env.JWT_SECRET_KEY,{expiresIn : '5d'})
+                            res.send({status :"success" , message: "login successfull" , "token" : token})
                         }else{
                             res.send({message : "invalid detail"})
                         }
@@ -55,6 +60,20 @@ class UserController {
             }
         } catch (error) {
             res.send({status : "failed", message : "login failed"})
+        }
+    }
+    static changedpassword = async (req,res) =>{
+        const {password , password_confirmation } = req.body
+        if(password && password_confirmation){
+            if(password !== password_confirmation){
+                res.send({message : "both password does not match"})
+            }else{
+                const salt = await bcrypt.genSalt(10)
+                const newHashpassword = await bcrypt.hash(password , salt)
+                res.send({status : "success" , message : "changed password "})
+            }
+        }else{
+            res.send({status : "failed", message : "All field are requried"})
         }
     }
 }
