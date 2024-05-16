@@ -3,6 +3,9 @@ dotenv.config()
 import express  from 'express'
 import cors from 'cors'
 import connectdb from './config/connectdb.js'
+import userrouter from './routes/userRoutes.js'
+
+
 
 
 const app = express();
@@ -18,6 +21,9 @@ connectdb(DATABASE_URL)
 
 //JSON
 app.use(express.json())
+
+//load routes 
+app.use("/api/user" , userrouter)
 
 
 app.listen(PORT, ()=>{
