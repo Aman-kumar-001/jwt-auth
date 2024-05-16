@@ -21,6 +21,7 @@ class UserController {
                             tc : tc
                          })
                          await doc.save()
+                         res.send({status : "success" , message : "registered"})
                     }catch(error){
                       res.send({status : "failed" , message : "unable to registered"})
                     }
@@ -30,6 +31,30 @@ class UserController {
             }else{
                 res.send({status : "failed" , message : "All field are required"})
             }
+        }
+    }
+
+
+    static userLogin = async (req,res) =>{
+        try {
+            const {email , password} =req.body
+            if(email && password){
+                const   user = await userModel.findOne({email : email})
+                if(user){
+                        const isMatch = await bcrypt.compare(password , user.password)
+                        if((user.email === email)&& isMatch){
+                            res.send({status :"success" , message: "login successfull"})
+                        }else{
+                            res.send({message : "invalid detail"})
+                        }
+                }else{
+                    res.send({message : "User not found"})
+                }
+            }else{
+                res.send({status :"failed" , message: "both field are required"})
+            }
+        } catch (error) {
+            res.send({status : "failed", message : "login failed"})
         }
     }
 }
