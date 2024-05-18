@@ -4,7 +4,7 @@ import userModel from '../models/user.js';
 var checkUserAuth = async (req,res , next) =>{
     let token 
     const {authorization } = req.headers;
-    if(authorization && authorization.startswith('bearer')){
+    if(authorization && authorization.startsWith('bearer')){
         try {
             token = authorization.split(' ')[1]
 
@@ -12,7 +12,7 @@ var checkUserAuth = async (req,res , next) =>{
             const  {userID} = jwt.verify(token , process.env.JWT_SECRET_KEY)
 
             //get user from token
-            req.user = await userModel.findById(userID).select(-password)
+            req.user = await userModel.findById(userID).select('-password' )
             next()
         } catch (error) {
              res.send({message : "unauthorized user"})

@@ -63,7 +63,9 @@ class UserController {
         }
     }
     static changedpassword = async (req,res) =>{
-        const {password , password_confirmation } = req.body
+        const {password , password_confirmation } = req.body;
+        console.log(password)
+        console.log(password_confirmation)
         if(password && password_confirmation){
             if(password !== password_confirmation){
                 res.send({message : "both password does not match"})
