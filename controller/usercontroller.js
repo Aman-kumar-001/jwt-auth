@@ -72,6 +72,7 @@ class UserController {
             }else{
                 const salt = await bcrypt.genSalt(10)
                 const newHashpassword = await bcrypt.hash(password , salt)
+                await userModel.findByIdAndUpdate(req.use._id , {$set : {password : newHashpassword}})
                 res.send({status : "success" , message : "changed password "})
             }
         }else{
